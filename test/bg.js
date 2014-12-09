@@ -4,15 +4,19 @@ $(document).ready(function(){
 	document.getElementById('bg').height = $(document).height();
 	document.getElementById('bg').width = $(document).width();
 
-	var animation = new animatedLine();
+	var animation = new animatedLine(Math.floor($(document).width() / 2), Math.floor($(document).height() / 2), "#0F5791");
 	animation.init();
+
+	var animation2 = new animatedLine(200,200, "#0F5791");
+	animation2.init();
+
 
 });
 
-function animatedLine(){
+function animatedLine(startx, starty, colorStr){
 	// these should be passed into the object.
-	this.curpointX = Math.floor($(document).width() / 2),
-	this.curpointY = Math.floor($(document).height() / 2),
+	this.curpointX = startx,
+	this.curpointY = starty,
 	this.NORTH = 1,
 	this.NORTHEAST = 2;
 	this.EAST = 3;
@@ -21,10 +25,12 @@ function animatedLine(){
 	this.SOUTHWEST = 6; 
 	this.WEST = 7;
 	this.NORTHWEST = 8;
+	this.colorHex = colorStr;
 
 	// Lets make this into an object.
 	// We will then be calling the object withing a line drawer to animate this in the background.
-	var testola = this;
+	var self = this;
+	// Lets get rid of one of these position variables.
 	this.startpointx = this.curpointX;
 	this.startpointy = this.curpointY;
 	this.curposx = this.curpointX;
@@ -34,11 +40,10 @@ function animatedLine(){
 	this.myinterval = {};
 
 	this.init = function() {
-	   	this.myinterval = setInterval( function() { console.log(testola); testola.animate(this.endpointx,this.endpointy);}, 1);
-	   	clearInterval(this.myinterval);
+	   	this.myinterval = setInterval( function() { self.animate(self.endpointx,self.endpointy);}, 100);
 	}
 
-	animate = function(endpointx, endpointy) {
+	this.animate = function(endpointx, endpointy) {
 		this.startpointy = this.curposy;
 		this.startpointx = this.curposx;
 		if (this.curposx == endpointx && this.curposy == endpointy){
@@ -59,14 +64,13 @@ function animatedLine(){
 		else{
 			console.log("We have a problem");
 		}
-
-	    this.drawShape(this.curposx, this.curposy, "#000");
+	    this.drawShape(this.curposx, this.curposy, this.colorHex);
 	}
 
 	this.drawShape = function(tendpointx, tendpointy, clor){
 	    var canvas = document.getElementById('bg');
 	    var ctx = canvas.getContext('2d');
-	    
+
 	    ctx.strokeStyle = clor;
 	    ctx.globalAlpha = 0.2;
 	    ctx.beginPath();
@@ -145,6 +149,11 @@ function animatedLine(){
 			this.curpointY = this.endpointy;
 			this.endpointx = newPointX;
 			this.endpointy = newPointY;
+
+			// console.log("start: " + this.startpointx + " " + this.startpointy);
+		 //   	console.log("end: " + this.endpointx + " " + this.endpointy);
+
+
 			
 		}
 		else {
