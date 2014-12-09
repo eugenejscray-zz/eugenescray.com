@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Grayscale - Start Bootstrap Theme</title>
+    <title>Eugene Scray - Software Engineering at Its Finest</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +21,12 @@
     <link href="font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
-
+    <style>
+        .test{
+            background-color: white;
+            opacity: .5;
+        }
+    </style>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -56,7 +61,7 @@
                         <a class="page-scroll" href="#about">About</a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="#download">Download</a>
+                        <a class="page-scroll" href="#download">Works</a>
                     </li>
                     <li>
                         <a class="page-scroll" href="#contact">Contact</a>
@@ -67,15 +72,18 @@
         </div>
         <!-- /.container -->
     </nav>
+    <canvas id="bg">
+        <!-- animation stuff. -->
+    </canvas>
 
     <!-- Intro Header -->
     <header class="intro">
         <div class="intro-body">
-            <div class="container">
+            <div class="container editable">
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2">
-                        <h1 class="brand-heading">Grayscale</h1>
-                        <p class="intro-text">A free, responsive, one page Bootstrap theme.<br>Created by Start Bootstrap.</p>
+                        <h2 class="brand-heading">Eugene Scray</h2>
+                        <p class="intro-text">Software Engineering and Technical Consulting<br>At its finest</p>
                         <a href="#about" class="btn btn-circle page-scroll">
                             <i class="fa fa-angle-double-down animated"></i>
                         </a>
@@ -89,22 +97,42 @@
     <section id="about" class="container content-section text-center">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2">
-                <h2>About Grayscale</h2>
-                <p>Grayscale is a free Bootstrap 3 theme created by Start Bootstrap. It can be yours right now, simply download the template on <a href="http://startbootstrap.com/template-overviews/grayscale/">the preview page</a>. The theme is open source, and you can use it for any purpose, personal or commercial.</p>
-                <p>This theme features stock photos by <a href="http://gratisography.com/">Gratisography</a> along with a custom Google Maps skin courtesy of <a href="http://snazzymaps.com/">Snazzy Maps</a>.</p>
-                <p>Grayscale includes full HTML, CSS, and custom JavaScript files along with LESS files for easy customization.</p>
+                <h2>About Eugene</h2>
+                <p>Born and raised in Chicago I have learned what businesses need to get software projects moving.</p>
+                <p>As a software engineer I have mastered a few technologies, languages, and frameworks. Here are a few I can list now but the list continuously grows, so please call me for an up to date conversation.</p>
+                <h4>Languages</h4>
+                <ul>
+                    <li>PHP</li>
+                    <li>Coldfusion</li>
+                    <li>Javascript</li>
+                    <li>JAVA</li>
+                    <li>VB.Net</li>
+                    <li>PHP</li>
+                </ul>
+                <h4>Constructs</h4>
+                <ul>
+                    <li>LAMP Stack</li>
+                    <li>JQuery</li>
+                    <li>Codeigniter</li>
+                    <li>ColdSpring</li>
+                </ul>
+                <h4>Other Tools / Sofware</h4>
+                <ul>
+                    <li>Vagrant</li>
+                    <li>New Relic</li>
+                    <li>Axure</li>
+                    <li>Sublime, Dreamweaver, , Eclipse, and other useful IDEs</li>
+                </ul>
             </div>
         </div>
     </section>
 
-    <!-- Download Section -->
-    <section id="download" class="content-section text-center">
+    <!-- Works Section -->
+    <section id="works" class="content-section text-center">
         <div class="download-section">
             <div class="container">
                 <div class="col-lg-8 col-lg-offset-2">
-                    <h2>Download Grayscale</h2>
-                    <p>You can download Grayscale for free on the preview page at Start Bootstrap.</p>
-                    <a href="http://startbootstrap.com/template-overviews/grayscale/" class="btn btn-default btn-lg">Visit Download Page</a>
+                    <h2>Coming Soon. Please Ask: 773 679 0014</h2>
                 </div>
             </div>
         </div>
@@ -114,11 +142,15 @@
     <section id="contact" class="container content-section text-center">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2">
-                <h2>Contact Start Bootstrap</h2>
-                <p>Feel free to email us to provide some feedback on our templates, give us suggestions for new templates and themes, or to just say hello!</p>
-                <p><a href="mailto:feedback@startbootstrap.com">feedback@startbootstrap.com</a>
+                <h2>Contact Me!</h2>
+                <h4>Email me anytime:</h4>
+                <p><a href="mailto:eugene.j.scray@gmail.com">eugene.j.scray@gmail.com</a>
                 </p>
-                <ul class="list-inline banner-social-buttons">
+                <h4>Call Me!</h4>
+                <p><a href="tel:+13174562564">773 679 0014</a>
+                </p>
+                
+                <!-- <ul class="list-inline banner-social-buttons">
                     <li>
                         <a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
                     </li>
@@ -128,18 +160,18 @@
                     <li>
                         <a href="https://plus.google.com/+Startbootstrap/posts" class="btn btn-default btn-lg"><i class="fa fa-google-plus fa-fw"></i> <span class="network-name">Google+</span></a>
                     </li>
-                </ul>
+                </ul> -->
             </div>
         </div>
     </section>
 
     <!-- Map Section -->
-    <div id="map"></div>
-
+    <!-- <div id="map"></div>
+ -->
     <!-- Footer -->
     <footer>
         <div class="container text-center">
-            <p>Copyright &copy; Your Website 2014</p>
+            <p>Copyright &copy; EugeneScray.com</p>
         </div>
     </footer>
 
@@ -157,6 +189,10 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="js/grayscale.js"></script>
+    <!-- animation script -->
+    <script src="js/bg.js"></script>
+
+
 
 </body>
 
