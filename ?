@@ -207,7 +207,7 @@ a:focus {
 .content-section {
   padding-top: 100px;
 }
-.works-section {
+.download-section {
   width: 100%;
   padding: 50px 0;
   color: #000000;
@@ -296,6 +296,9 @@ img::-moz-selection {
 }
 body {
   webkit-tap-highlight-color: rgba(0, 0, 0, 0.2);
+}
+.deIcon {
+  background: url(../img/deLogoIcon.jpg) no-repeat center center scroll;
 }
 #bg {
   position: absolute;
