@@ -4,7 +4,19 @@ $(document).ready(function(){
 	document.getElementById('bg').width = $(document).width();
 
 	// ranomize the spot.
+
+
+	// for(var i = 0; i < 12; i++){
+	// 	animation = new animatedLine(Math.floor($(document).width() / 2), Math.floor($(document).height() / 2), "#0F5791");
+
+
+
+	// }
 	var animation = new animatedLine(Math.floor($(document).width() / 2), Math.floor($(document).height() / 2), "#0F5791");
+
+
+
+
 	animation.init();
 
 	var animation2 = new animatedLine(200,200, "#0F5791");
