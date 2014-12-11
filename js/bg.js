@@ -6,22 +6,13 @@ $(document).ready(function(){
 	// ranomize the spot.
 
 
-	// for(var i = 0; i < 12; i++){
-	// 	animation = new animatedLine(Math.floor($(document).width() / 2), Math.floor($(document).height() / 2), "#0F5791");
+	for(var i = 0; i < 12; i++){
+		yCord = Math.floor($(document).height() / 12) * i;
+		xCord = ( i % 2 == 0 ? Math.floor($(document).width() / 3) : Math.floor($(document).width() * 2 / 3) ) ;
 
-
-
-	// }
-	var animation = new animatedLine(Math.floor($(document).width() / 2), Math.floor($(document).height() / 2), "#0F5791");
-
-
-
-
-	animation.init();
-
-	var animation2 = new animatedLine(200,200, "#0F5791");
-	animation2.init();
-
+		animation = new animatedLine(xCord, yCord, "#0F5791");
+		animation.init();
+	}
 
 });
 
@@ -89,13 +80,42 @@ function animatedLine(startx, starty, colorStr){
 	    ctx.stroke();
 	} 
 
-	this.drawLine = function(){
+	this.drawLine = function(flagDirection){
 		
 		clearInterval(this.myinterval);
 
 		// calculate the next point with direction and distance.
 		var direction = Math.floor(Math.random() * 8) + 1;
 		var distance = Math.floor(Math.random() * 10) + 1;
+
+
+		// Test so the animation will "gravitate" towards the middle of the screen
+		// select a random number and if 1/10 time then pull the animation in that direction.
+		var xGravPull = Math.floor(Math.random() * 8) + 1 == 8;
+		var yGravPull = Math.floor(Math.random() * 8) + 1 == 8;
+
+		// console.log("Direction" + direction);
+		// console.log("point" + this.endpointx);
+		console.log($(document).width);
+
+		if(xGravPull && direction > this.NORTH && direction < this.SOUTH && this.endpointx < $(document).width / 2){
+			console.log("HERE");
+			direction = this.reverseDirection(direction);
+		}
+		else if(xGravPull && direction > this.SOUTH && this.endpointx > $(document).width / 2)
+			direction = this.reverseDirection(direction);
+
+		if(yGravPull && (direction < this.EAST || direction > this.WEST) && this.endpointy < $(document).height / 2){
+			direction = this.reverseDirection(direction);
+		}
+		else if(yGravPull && (direction > this.EAST && direction < this.WEST) && this.endpointy > $(document).height / 2){
+			direction = this.reverseDirection(direction);
+		}
+
+
+
+
+
 
 		var newPointY, newPointX;
 
@@ -161,10 +181,23 @@ function animatedLine(startx, starty, colorStr){
 			this.endpointy = newPointY;			
 		}
 		else {
-			// this may be fatal because we are still putting execution onto the stack. We need to refactor to either avoid recursion or avoid drawing the line.
+			// This is bugging out for some reason we are running the full programatic stack.
 			this.drawLine();
 		}
 	}
+
+	this.reverseDirection = function(direction){
+		console.log("Gravitating" + direction);
+		REVERSE_DIRECTION_INT = 4;
+		newDirection = direction + REVERSE_DIRECTION_INT % 8;
+		if(newDirection == 0)
+			newDirection = 8;
+		console.log("Edning Direction" + direction);
+
+		return newDirection
+
+	}
+
 }
 
 
