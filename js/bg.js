@@ -96,23 +96,24 @@ function animatedLine(startx, starty, colorStr){
 
 		// console.log("Direction" + direction);
 		// console.log("point" + this.endpointx);
-		console.log($(document).width);
 
-		if(xGravPull && direction > this.NORTH && direction < this.SOUTH && this.endpointx < $(document).width / 2){
-			console.log("HERE");
+
+
+		// Something is wrong with this function we are gravitating to the left always.
+		if(xGravPull && direction > this.NORTH && direction < this.SOUTH && this.endpointx < $(document).width() / 2){
 			direction = this.reverseDirection(direction);
 		}
-		else if(xGravPull && direction > this.SOUTH && this.endpointx > $(document).width / 2)
+		else if(xGravPull && direction > this.SOUTH && this.endpointx > $(document).width() / 2)
 			direction = this.reverseDirection(direction);
 
-		if(yGravPull && (direction < this.EAST || direction > this.WEST) && this.endpointy < $(document).height / 2){
-			direction = this.reverseDirection(direction);
-		}
-		else if(yGravPull && (direction > this.EAST && direction < this.WEST) && this.endpointy > $(document).height / 2){
+		if(yGravPull && (direction < this.EAST || direction > this.WEST) && this.endpointy < $(document).height() / 2){
 			direction = this.reverseDirection(direction);
 		}
+		else if(yGravPull && (direction > this.EAST && direction < this.WEST) && this.endpointy > $(document).height() / 2){
+			direction = this.reverseDirection(direction);
+		}
 
-
+		console.log(direction);
 
 
 
@@ -187,15 +188,13 @@ function animatedLine(startx, starty, colorStr){
 	}
 
 	this.reverseDirection = function(direction){
-		console.log("Gravitating" + direction);
+		// console.log("Gravitating" + direction);
 		REVERSE_DIRECTION_INT = 4;
-		newDirection = direction + REVERSE_DIRECTION_INT % 8;
+		newDirection = (direction + REVERSE_DIRECTION_INT) % 8;
 		if(newDirection == 0)
 			newDirection = 8;
-		console.log("Edning Direction" + direction);
 
-		return newDirection
-
+		return newDirection;
 	}
 
 }
