@@ -1,9 +1,9 @@
 // runtime
-// We have to make this so we can have multiple animation lines in the canvas.
 $(document).ready(function(){
 	document.getElementById('bg').height = $(document).height();
 	document.getElementById('bg').width = $(document).width();
 
+	// ranomize the spot.
 	var animation = new animatedLine(Math.floor($(document).width() / 2), Math.floor($(document).height() / 2), "#0F5791");
 	animation.init();
 
@@ -27,8 +27,6 @@ function animatedLine(startx, starty, colorStr){
 	this.NORTHWEST = 8;
 	this.colorHex = colorStr;
 
-	// Lets make this into an object.
-	// We will then be calling the object withing a line drawer to animate this in the background.
 	var self = this;
 	// Lets get rid of one of these position variables.
 	this.startpointx = this.curpointX;
@@ -137,7 +135,7 @@ function animatedLine(startx, starty, colorStr){
 	}
 
 	// Helper function to set variables for animation. 
-	// TODO refactor to get rid of some of these variables. (at least one)
+	// TODO refactor to get rid of some of these variables.
 	this.setAnimationVariables = function(newPointX, newPointY){
 
 		// we can check this inside of here. 
@@ -148,13 +146,7 @@ function animatedLine(startx, starty, colorStr){
 			this.curpointX = this.endpointx;
 			this.curpointY = this.endpointy;
 			this.endpointx = newPointX;
-			this.endpointy = newPointY;
-
-			// console.log("start: " + this.startpointx + " " + this.startpointy);
-		 //   	console.log("end: " + this.endpointx + " " + this.endpointy);
-
-
-			
+			this.endpointy = newPointY;			
 		}
 		else {
 			// this may be fatal because we are still putting execution onto the stack. We need to refactor to either avoid recursion or avoid drawing the line.

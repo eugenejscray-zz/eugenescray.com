@@ -170,8 +170,10 @@
                 <div class="col-lg-10 col-lg-offset-1">
                     <h3>More Coming Soon. Please Ask: 773 679 0014</h2>
                     <div class="col-lg-4">
-                        <h4>Discovery Education<br><sub>(Subset of the Discovery Channel)</sub></h4>
-                        <a href="http://www.discoveryeducation.com"><img src="img/deLogoIcon.jpg" alt="Discovery Education" /></a>
+                        <h4 class="works-description">Discovery Education</h4>
+                        <div class="works-icon-wrapper">
+                            <a href="http://www.discoveryeducation.com"><img class="works-icon" src="img/deLogoIcon.jpg" alt="Discovery Education" /></a>
+                        </div>
                         <p>
                             <div class="btn-group" role="group" aria-label="Overview and Sample Code Section">
                                 <button type="button" data-toggle="modal" data-target=".de-modal-overview" class="btn btn-primary">Overview</button>
@@ -180,8 +182,10 @@
                         </p>
                     </div>
                     <div class="col-lg-4">
-                        <h4>MVA Diagnostics</h4>
-                        <a href="http://www.mvadiagnostics.com" ><img src="img/MVALogoIcon.png" alt="MVA Diagnostics" /></a>
+                        <h4 class="works-description">MVA Diagnostics</h4>
+                        <div class="works-icon-wrapper">
+                            <a href="http://www.mvadiagnostics.com" ><img class="works-icon" src="img/MVALogoIcon.png" alt="MVA Diagnostics" /></a>
+                        </div>
                         <p>
                             <div class="btn-group" role="group" aria-label="Overview and Sample Code Section">
                                 <button type="button" data-toggle="modal" data-target=".mva-modal-overview" class="btn btn-primary">Overview</button>
@@ -190,8 +194,10 @@
                         </p>
                     </div>
                     <div class="col-lg-4">
-                        <h4>MyFootPath</h4>
-                        <a href="http://www.myfootpath.com" ><img src="img/myFootPathIcon.png" alt="MyFootPath" /></a>
+                        <h4 class="works-description">MyFootPath</h4>
+                        <div class="works-icon-wrapper">
+                            <a href="http://www.myfootpath.com" ><img class="works-icon" src="img/myFootPathIcon.png" alt="MyFootPath" /></a>
+                        </div>
                         <p>
                             <div class="btn-group" role="group" aria-label="Overview and Sample Code Section">
                                 <button type="button" data-toggle="modal" data-target=".mfp-modal-overview" class="btn btn-primary">Overview</button>
@@ -259,193 +265,271 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="js/grayscale.js"></script>
+
     <!-- animation script -->
     <script src="js/bg.js"></script>
 
-<!-- These should be included in their own files. -->
-<div class="modal fade de-modal-overview" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">Discovery Education Overview</h4>
-      </div>
-      <div class="modal-body">
-        <h4>Discovery Communications – Math Techbook: </h4>
-        <p>
-            One of the many items I was in charge of at Discovery Comunicatioons was the data Math Techbook uses for its day to day functions. This screen shot shows the landing screen for Math Techbook. Here I helped create the tree structure used by each Course. Each course had units attached and concepts were attached branched out from there.
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+    <!-- This is for google analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-48438521-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+    <!-- These should be included in their own files. -->
+    <div class="modal fade de-modal-overview" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">Discovery Education Overview</h4>
+          </div>
+          <div class="modal-body">
+            <div class="container">
+                <div class="col-lg-6">
+                    <h4>Discovery Education – Math Techbook: </h4>
+                    <p>
+                        One of the many items I was in charge of at Discovery Comunicatioons was the data Math Techbook uses for its day to day functions. This screen shot shows the landing screen for Math Techbook. Here I helped create the tree structure used by each Course. Each course had units attached and concepts were attached branched out from there.
+                    </p>
+                    <p>
+                        Concepts the lowest level of the taxonomy tree before you were exposed to assets were displayed to users on pages like these below: 
+                    </p>
+                    <p>
+                        Most of my efforts with Math Techbook were focused on standards. This page displays the structure for standards that were much in the same way courses and units were structured in a tree like way.
+                    </p>
+                </div>
+                <div class="col-lg-3">
+                    <div class="profile-img-title">Front Page</div>
+                    <img class="profile-img" src="img/de-Math-tb-front.png" />
+                    <div class="profile-img-title">Concepts Page</div>
+                    <img class="profile-img" src="img/de-Mathtb-pythagorean.png" />
+                    <div class="profile-img-title">Standards</div>
+                    <img class="profile-img" src="img/de-Mathtb-standards.png" />
+                </div>
+            </div>
+            <br />
+            <div class="container">
+                <div class="col-lg-6">
+                    <h4>Discovery Education – Campaign Project</h4>
+                    <p>
+                        As the lead developer much work an organization needed to be done for this project. If you navigate to app.discoveryeducation.com click on Passcode/New User and enter in the passcode “TB14 Book” You will witness all of the work I have done on this project. 
+                    </p>
+                    <p>
+                        Below is a form one is directed to if he or she is a new user. If you refer to the code sample I have attached you will see there is much more going on than simply saving the form fields.
+                    </p>
+                    <p>
+                        The Next step is to gather the products the user wants to sign up for. This will dictate his or her experience once they have signed in. This form is also dynamically generated based on the campaign that is selected.
+                    </p>
+                    <p>
+                        Last but not least we have the user experience. For most campaigns the user is greated with an introduction video. These videos had to be toggled on the backend and all DE "products" had to be accessible upon log in. 
+                    </p>
+                </div>
+                <div class="col-lg-3">
+                    <div class="profile-img-title">Campaign Starting Page</div>
+                    <img class="profile-img" src="img/de-Campaign-front.png" />
+                    <div class="profile-img-title">Campaign Questionaire</div>
+                    <img class="profile-img" src="img/de-Campaign-Step-One.png" />
+                    <div class="profile-img-title">Final Campaign Video</div>
+                    <img class="profile-img" src="img/de-Campaign-Final.png" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+    <!-- we have a extra div tag somewhere The above should be ajaxed anyway. (Consider refactoring) -->
+    </div>
 
-<div class="modal fade de-modal-code" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">Discover Education Sample Code</h4>
-      </div>
-      <div class="modal-body">
-        Coming Soon!
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+    <div class="modal fade de-modal-code" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">Discovery Education Sample Code</h4>
+          </div>
+          <div class="modal-body">
+            Coming Soon!
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
 
-<div class="modal fade mva-modal-overview" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">MVA Diagnostics Overview</h4>
-      </div>
-      <div class="modal-body">
-        MVA Diagnosics was a project given to me through Boru. MVA was intereseted in setting up a CRM system that would be in charge of all of the business data they need to function. Being in a leadership role I learned what it takes to build great things from conception to development. Without my help the MVA project would have been in big trouble they 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+    <div class="modal fade mva-modal-overview" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">MVA Diagnostics Overview</h4>
+          </div>
+          <div class="modal-body">
+            MVA Diagnosics was a project given to me through Boru. MVA was intereseted in setting up a CRM system that would be in charge of all of the business data they need to function. Being in a leadership role I learned what it takes to build great things from conception to development. Without my help the MVA project would have been in big trouble they 
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<div class="modal fade mva-modal-code" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">MVA Diagnostics Code Sample</h4>
-      </div>
-      <div class="modal-body">
-        Coming Soon!
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+    <div class="modal fade mva-modal-code" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">MVA Diagnostics Code Sample</h4>
+          </div>
+          <div class="modal-body">
+            Coming Soon!
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
 
-<div class="modal fade mfp-modal-overview" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">MyFootPat Overview</h4>
-      </div>
-      <div class="modal-body">
-        <p>
-            MyFootPath was my first exposure to the world of development. I was originally an Intern and grew into a web developer. I quickly learned that my job could be automated by writing a few simple scripts. THis grew and before I knew it I was helped develop a new tool called the new-form-builder. 
-        </p>
-        <p>
-            My Footpath has been listed in the top 50 in the inc 500. This means they were in the top 50 of the largest growing companies in the US. To put this into perspective by the time I left they had grown over 3000 percent from the time of my stay to the end of my stay. 
-        </p>
-        <p>
-            As the company grew so did deman for my tool and more functionality had to built into it. I helped train teams of people to use this tool that was responsible for every single dollar of revenue for this small company
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+    <div class="modal fade mfp-modal-overview" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">MyFootPath Overview</h4>
+          </div>
+          <div class="modal-body">
+            <div class="container">
+                <div class="col-lg-6">
+                    <p>
+                        MyFootPath was my first exposure to the world of development. I was originally an Intern and grew into a web developer. I quickly learned that my job could be automated by writing a few simple scripts. THis grew and before I knew it I was helped develop a new tool called the new-form-builder. 
+                    </p>
+                    <p>
+                        My Footpath has been listed in the top 50 in the inc 500. This means they were in the top 50 of the largest growing companies in the US. To put this into perspective by the time I left they had grown over 3000 percent from the time of my stay to the end of my stay. 
+                    </p>
+                    <p>
+                        As the company grew so did deman for my tool and more functionality had to built into it. I helped train teams of people to use this tool that was responsible for every single dollar of revenue for this small company
+                    </p>
+                    <p>
+                        Shown on the right is the new form builder I helped to build and maintain. The first image is a listing of all forms and which ones still needed to be converted over to the new system. This also gave us access to the editor when the user selects a form for a specific school. Inside of the editor (image 2) we can see all of the fields that could be edited and what properties one could give to each field. In the third image we have the specific settings and custom validation that needed to be included onto the page. Take for instance clients would have us reject a client if he or she was under 18 and lived in California for specific schools. These types of scenarios were numerous and had to be included in the application's use case. The last image is a fully converted form where we can see a visual difference.
+                    </p>
+                    <p>
+                        Much of the work was done on the back-end since each hard-coded form had to be converted to its respective database format. For example a field’s name, validation, and values had to be converted from hard html to MySQL rows and fields. Many Scripts had to be written since our older forms were dynamic in structure and we had more than 1000 different forms to convert. During my stay at MyFootPath I converted over 500 forms and helped to maintain them. 
+                    </p>
+                </div>
+                <div class="col-lg-3">
+                    <div class="profile-img-title">MyFootPath's New Form Builder Start Page</div>
+                    <img class="profile-img" src="img/mfp-new-form-builder.png" />
+                    <div class="profile-img-title">MyFootPath's Form Editor</div>
+                    <img class="profile-img" src="img/mfp-new-form-builder-form-editor.png" />
+                    <div class="profile-img-title">MyFootPath's Validation Editor</div>
+                    <img class="profile-img" src="img/mfp-new-form-builder-validation.png" />
+                    <div class="profile-img-title">MyFootpath's Fully Converted Form</div>
+                    <img class="profile-img" src="img/mfp-new-form-builder-end-result.png" />
+                </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-    
-<div class="modal fade mfp-modal-code" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">MyFootPat Code Sample</h4>
-      </div>
-      <div class="modal-body">
-        Coming Soon!
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+        
+    <div class="modal fade mfp-modal-code" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">MyFootPath Code Sample</h4>
+          </div>
+          <div class="modal-body">
+            Coming Soon!
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<div class="modal fade references-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">References</h4>
-      </div>
-      <div class="modal-body">
-        <p class="reference-section">
-            <b>Tarek Sami</b><br />
-            Project Manager, Boru<br />
-            Chicago, IL<br />
-            Mobile Number: (630) 649-9698<br />
-        </p>
-        <p class="reference-section">
-            <b>Daniel Hayes</b><br />
-            CTO - Boru<br />
-            1332 W. Lake, Chicago, Il<br />
-            Office Number:   312-878-6461 x812<br />
-        </p>
-        <p class="reference-section">
-            <b>Laura Cation</b><br />
-            Discovery Education Consultant<br />
-            Chicago, Il<br />
-            Office Number: (312) 422-1600<br />
-        </p>
-        <p class="reference-section">
-            <b>Neal Patel</b><br />
-            MyFootPath Tech Lead<br />
-            820 West Jackson<br />
-            Chicago, Il<br />
-            Office Number: (312) 327-7137<br />
-        </p>
-        <p class="reference-section">
-            <b>Gene S.</b><br />
-            Supervisor<br />
-            220 Virginia Ave. <br />
-            Indianapolis, IN<br />
-            Office Number: (773) 562-8009<br />
-        </p>
-        <p class="reference-section">
-            <b>Suchi Rodda</b><br />
-            Analyst/ Webmaster<br />
-            Louisiana Tech<br />
-            Ruston, LA<br />
-            Office Number: (318) 257-2238<br />
-        </p>
-        <p class="reference-section">
-            <b>Mike Shetz</b><br />
-            Auto Seller and real-estate entrepreneur<br />
-            Mike shetz Auto Sellers<br />
-            Chicago Il<br />
-            Office number: (773) 895-8216<br />
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+    <div class="modal fade references-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">References</h4>
+          </div>
+          <div class="modal-body">
+            <p class="reference-section">
+                <b>Tarek Sami</b><br />
+                Project Manager, Boru<br />
+                Chicago, IL<br />
+                Mobile Number: (630) 649-9698<br />
+            </p>
+            <p class="reference-section">
+                <b>Daniel Hayes</b><br />
+                CTO - Boru<br />
+                1332 W. Lake, Chicago, Il<br />
+                Office Number:  (312) 878-6461 ext812<br />
+            </p>
+            <p class="reference-section">
+                <b>Laura Cation</b><br />
+                Discovery Education Consultant<br />
+                Chicago, Il<br />
+                Office Number: (312) 422-1600<br />
+            </p>
+            <p class="reference-section">
+                <b>Neal Patel</b><br />
+                MyFootPath Tech Lead<br />
+                820 West Jackson<br />
+                Chicago, Il<br />
+                Office Number: (312) 327-7137<br />
+            </p>
+            <p class="reference-section">
+                <b>Gene S.</b><br />
+                Supervisor<br />
+                220 Virginia Ave. <br />
+                Indianapolis, IN<br />
+                Office Number: (773) 562-8009<br />
+            </p>
+            <p class="reference-section">
+                <b>Suchi Rodda</b><br />
+                Analyst/ Webmaster<br />
+                Louisiana Tech<br />
+                Ruston, LA<br />
+                Office Number: (318) 257-2238<br />
+            </p>
+            <p class="reference-section">
+                <b>Mike Shetz</b><br />
+                Auto Seller and real-estate entrepreneur<br />
+                Mike shetz Auto Sellers<br />
+                Chicago Il<br />
+                Office number: (773) 895-8216<br />
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
 
 </body>
