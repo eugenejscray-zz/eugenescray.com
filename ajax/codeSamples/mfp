@@ -1,0 +1,1274 @@
+<script src="../../../utilities/google-code-prettify/run_prettify.js">
+
+<code class="prettyprint">
+	include_once HOME_PATH . 'global/db_connect.php';
+	include_once HOME_PATH . 'global/classes/transmissions.php';
+	include_once HOME_PATH . 'global/classes/curl.php';
+	include_once HOME_PATH . 'global/classes/partner_inquiry.php';
+	include_once HOME_PATH . 'global/classes/class.MFPObject.php';
+	include_once HOME_PATH . 'global/classes/class.MFPUtility.php';
+	include_once HOME_PATH . 'global/classes/class.MFPLeadTracker.php';
+	include_once HOME_PATH . 'global/classes/class.MFPEmail.php';
+	include_once HOME_PATH . 'global/classes/class.SandboxPartnerCapMembers.php';
+	// Required files for EDMC
+	include_once HOME_PATH . 'global/classes/exporting/edmc.php';
+	include_once HOME_PATH . 'global/classes/nusoap/nusoap.php';
+	//include_once HOME_PATH . 'global/colleges/source_tracking_processing.php';
+
+	class View extends Public_Controller
+	{
+	    
+	    // Holds our data array for our view
+	    private $data = array();
+	    
+	    // Holds our form object (fields, restrictions, settings, etc)
+	    private $form;
+	    
+	    // Holds an array of information for a form field
+	    private $field = array();
+	    
+	    // Holds an array of form fields
+	    private $fields = array();
+	    
+	    // Our form string that we build and pass to the view
+	    private $form_string;
+	    
+	    // Hold our post data
+	    private $post = array();
+	    
+	    // Holds our validation restrictions, if there are any
+	    private $restrictions = array();
+	    
+	    // Holds our result message
+	    private $result_message = array();
+	    
+	    // An array of standard field names that need to be "full width" when displaying the form
+	    private $wide_fields = array('postal_code', 'program_of_interest', 'campus_of_interest');
+	    
+	    public function __construct()
+	    {
+	        parent::__construct();
+	        
+	        // Load our form model
+	        $this->load->model('forms_m');
+	        // Load our partner_degrees_model
+	        $this->load->model('partner_degrees_m');
+	        
+	        // Load our form helper
+	        $this->load->helper('form');
+	        
+	    }
+	    
+	    public function load($name = NULL)
+	    {
+	        $id = $this->forms_m->find_by_name($name);
+	        if (!$id) {
+	            die('Could not find form!');
+	        }
+	        $this->render($id);
+	    }
+	    
+	    // This method handles rendering the form object
+	    public function render($id = NULL)
+	    {
+	        
+	        // Grab the form and all associated properties
+	        $this->form = $this->forms_m->get_form_by_ID($id);
+	        
+	        // Can't find it, die!
+	        if (!$this->form) {
+	            die('Could not load form data');
+	        }
+	        
+	        // If we have test mode
+	        if ($this->uri->segment(5) == 'test') {
+	            //echo '<pre>'; print_r($_REQUEST); echo '</pre>';
+	            //$this->output->enable_profiler(TRUE);
+	        }
+	        
+	        // Not sure what the hell this is but was included in the old begin.php file
+	        if (isset($_GET['c']) === TRUE && is_numeric($_GET['c']) == true) {
+	            setcookie('c', $_GET['c'], (time() + 604800), '/');
+	        }
+	        
+	        // If this is an internal form, we allow them to re-submit the form over and over
+	        if (isset($_GET['r']) === TRUE && $_GET['r'] == 'ayb') {
+	            $_SESSION['inquiry_sucess'] = 'no';
+	        }
+	        
+	        // Check if someone submitted this already
+	        if (isset($_SESSION['inquiry_sucess']) === TRUE && $_SESSION['inquiry_sucess'] == 'yes') {
+	            // We want to display an error message in our view
+	            $this->data['message'] = 'Sorry, this form has already been submitted';
+	        }
+	        
+	        // Generate our form string
+	        $this->_generate_form_string();
+	        
+	        // Generate our validation string
+	        $this->form->custom_validation = $this->_generate_validation_string();
+	        
+	        // Set our data values for the view template
+	        $this->data['partner_id']        = $this->form->partner_id;
+	        $this->data['partner_name']      = $this->form->partner_name;
+	        $this->data['restrictions']      = $this->form->restrictions;
+	        $this->data['form']              = $this->form_string;
+	        $this->data['logo']              = $this->form->logo;
+	        $this->data['title']             = 'MyFootpath | ' . $this->form->name;
+	        $this->data['form_name']         = $this->form->name;
+	        $this->data['content']           = '<div id="content">' . $this->form->content . '</div>';
+	        $this->data['custom_validation'] = $this->form->custom_validation;
+	        $this->data['custom_javascript'] = $this->form->custom_javascript;
+	        $this->data['leadid_success']    = $this->form->leadid_success_script;
+	        
+	        // Load our view			
+	        $this->load->view('forms/form', $this->data);
+	    }
+	    
+	    // This method handles rendering the form object
+	    public function test_render($id = NULL)
+	    {
+	        
+	        // Grab the form and all associated properties
+	        $this->form = $this->forms_m->get_form_by_ID($id);
+	        
+	        // Can't find it, die!
+	        if (!$this->form) {
+	            die('Could not load form data');
+	        }
+	        
+	        // If we have test mode
+	        if ($this->uri->segment(5) == 'test') {
+	            //echo '<pre>'; print_r($_REQUEST); echo '</pre>';
+	            //$this->output->enable_profiler(TRUE);
+	        }
+	        
+	        // Not sure what the hell this is but was included in the old begin.php file
+	        if (isset($_GET['c']) === TRUE && is_numeric($_GET['c']) == true) {
+	            setcookie('c', $_GET['c'], (time() + 604800), '/');
+	        }
+	        
+	        // If this is an internal form, we allow them to re-submit the form over and over
+	        if (isset($_GET['r']) === TRUE && $_GET['r'] == 'ayb') {
+	            $_SESSION['inquiry_sucess'] = 'no';
+	        }
+	        
+	        // Check if someone submitted this already
+	        if (isset($_SESSION['inquiry_sucess']) === TRUE && $_SESSION['inquiry_sucess'] == 'yes') {
+	            // We want to display an error message in our view
+	            $this->data['message'] = 'Sorry, this form has already been submitted';
+	        }
+	        
+	        // Generate our form string
+	        $this->_generate_form_string();
+	        
+	        // Generate our validation string
+	        $this->form->custom_validation = $this->_generate_validation_string();
+	        
+	        // Set our data values for the view template
+	        $this->data['partner_id']        = $this->form->partner_id;
+	        $this->data['partner_name']      = $this->form->partner_name;
+	        $this->data['restrictions']      = $this->form->restrictions;
+	        $this->data['form']              = $this->form_string;
+	        $this->data['logo']              = $this->form->logo;
+	        $this->data['title']             = 'MyFootpath | ' . $this->form->name;
+	        $this->data['form_name']         = $this->form->name;
+	        $this->data['content']           = '<div id="content">' . $this->form->content . '</div>';
+	        $this->data['custom_validation'] = $this->form->custom_validation;
+	        $this->data['custom_javascript'] = $this->form->custom_javascript;
+	        $this->data['leadid_success']    = $this->form->leadid_success_script;
+	        
+	        // Load our view			
+	        $this->load->view('forms/test_form', $this->data);
+	    }
+	    
+	    public function send_error()
+	    {
+	        // Check that we have post values
+	        if (isset($_POST) && count($_POST) > 0) {
+	            
+	            // Get values for email
+	            $partner   = isset($_POST['partner']) ? $_POST['partner'] : '';
+	            $form_url  = isset($_POST['form_url']) ? $_POST['form_url'] : '';
+	            $error_msg = isset($_POST['message']) ? $_POST['message'] : '';
+	            
+	            // Format our message
+	            $message = 'There was an error with the form:' . "\n\r";
+	            $message .= 'Partner: ' . $partner . "\n";
+	            $message .= 'Form Page: ' . $form_url . "\n";
+	            $message .= 'Error: ' . $error_msg;
+	            
+	            // Send this to Chris C and Chris R and if problem we can Fwd to Suzanne
+	            $recipients = 'jdelgado@myfootpath.com, escray@myfootpath.com';
+	            
+	            // Kick out email
+	            mail($recipients, 'Error with form submission', $message);
+	        }
+	        echo '1';
+	    }
+	    
+	    // This method takes a post array with the form information (as well as form ID) and processes it
+	    public function submit()
+	    {
+	        
+	        // Set our post data for this class to use
+	        $this->post = $_POST;
+	        if (!array_key_exists('form_id', $this->post)) {
+	            mail('jdelgado@myfootpath.com', 'No form ID new form builder', 'No form ID exists');
+	        }
+	        
+	        // Set a testing flag
+	        $dev_mode = FALSE;
+	        if (isset($this->post['myfootpath_test']) && $this->post['myfootpath_test'] == 'myfootpath_test') {
+	            $dev_mode = TRUE;
+	        }
+	        
+	        // Set a capping test flag
+	        $dev_cap_mode = FALSE;
+	        if (array_key_exists('test_cap', $this->post) && $this->post['test_cap'] == 'test_cap') {
+	            $dev_cap_mode = TRUE;
+	            //echo '<pre>'; print_r($_POST); exit;
+	        }
+	        
+	        
+	        // Get our form data from the database
+	        $this->form = $this->forms_m->get_form_by_ID($this->post['form_id']);
+	        
+	        if (!$this->form) {
+	            die('Could not load form data');
+	        }
+	        
+	        // Set the partner ID
+	        $partner_id = $this->form->partner_id;
+	        
+	        // Check that this is not duplicate
+	        if (!$this->_submitted_leads_check($partner_id, $this->post['email'], $this->post['last_name']) || $dev_mode) {
+	            
+	            // This line of code must be modified when school is online, or set user application to make an hidden field named campus_of_interest
+	            $partner_campuses_id = $this->post['campus_of_interest'];
+	            
+	            // Use the test URL if we wan to submit in testing mode, otherwise use live
+	            $post_url = (array_key_exists('myfootpath_test', $this->post) && $this->post['myfootpath_test'] == 'myfootpath_test') ? $this->form->post_test : $this->form->post_live;
+	            
+	            // Set our BF Lead ID to a variable and unset as we want only keep this for internal use!
+	            $bf_lead_id = isset($this->post['lead_id']) ? $this->post['lead_id'] : '';
+	            unset($this->post['lead_id']);
+	            
+	            // If this is going to EDMC set the data array and include required files
+	            if ($this->form->soap_method == 1) {
+	                
+	                // Our required data array items
+	                $data_array['first_name']              = (array_key_exists('first_name', $this->post)) ? $this->post['first_name'] : '';
+	                $data_array['last_name']               = (array_key_exists('last_name', $this->post)) ? $this->post['last_name'] : '';
+	                $data_array['address1']                = (array_key_exists('address1', $this->post)) ? $this->post['address1'] : '';
+	                $data_array['address2']                = (array_key_exists('address2', $this->post)) ? $this->post['address2'] : '';
+	                $data_array['city']                    = (array_key_exists('city', $this->post)) ? $this->post['city'] : '';
+	                $data_array['state']                   = (array_key_exists('state', $this->post)) ? $this->post['state'] : '';
+	                $data_array['postal_code']             = (array_key_exists('postal_code', $this->post)) ? $this->post['postal_code'] : '';
+	                $data_array['phone']                   = (array_key_exists('phone', $this->post)) ? $this->post['phone'] : '';
+	                $data_array['phone2']                  = (array_key_exists('phone2', $this->post)) ? $this->post['phone2'] : '';
+	                $data_array['ip_address']              = $_SERVER['REMOTE_ADDR'];
+	                $data_array['vendor_lead_identifier']  = time();
+	                $data_array['vendor_code']             = (array_key_exists('vendor_code', $this->post)) ? $this->post['vendor_code'] : '';
+	                $data_array['test_flag']               = (array_key_exists('myfootpath_test', $this->post)) ? $this->post['myfootpath_test'] : '';
+	                $data_array['location_code']           = $this->forms_m->get_campus_client_id($this->post['campus_of_interest']);
+	                $data_array['current_date']            = gmdate('Y-m-d');
+	                $data_array['current_time']            = gmdate('H:i:s');
+	                $data_array['source_code']             = (array_key_exists('source', $this->post)) ? $this->post['source'] : '';
+	                $data_array['current_full_date']       = $data_array['current_date'] . ' ' . $data_array['current_time'];
+	                $data_array['version_identifier_code'] = (array_key_exists('version_identifier_code', $this->post)) ? $this->post['version_identifier_code'] : '';
+	                $data_array['program_of_interest']     = $this->forms_m->get_program_value($this->post['program_of_interest']);
+	                $data_array['post_url']                = $post_url;
+	                $data_array['uhighlevel']              = (array_key_exists('education_level', $this->post)) ? $this->post['education_level'] : '';
+	                $data_array['YearHSGED']               = (array_key_exists('graduation_year', $this->post)) ? $this->post['graduation_year'] : '';
+	                $data_array['militaryStatus']          = (array_key_exists('military', $this->post)) ? $this->post['military'] : '';
+	                $data_array['vendor_affiliate']        = (array_key_exists('VendorLeadID', $this->post)) ? $this->post['VendorLeadID'] : '';
+	                $data_array['affiliate_id']            = (array_key_exists('affiliate_id', $this->post)) ? $this->post['affiliate_id'] : '';
+	                $data_array['warmTransferResult']      = (array_key_exists('warm_transfer_result', $this->post)) ? $this->post['warm_transfer_result'] : '';
+	                $data_array['uhighlevel']              = (array_key_exists('edulevel', $this->post)) ? $this->post['edulevel'] : '';
+	                $data_array['email']                   = (array_key_exists('email', $this->post)) ? $this->post['email'] : '';
+	                
+	                
+	                // Instantiate our EDMC Class and required data
+	                $au = new EDMC($data_array, $data_array['current_full_date']);
+	                
+	                // Get the post data
+	                $post_data = $au->GetPostData();
+	                
+	                // Hold our response for use later
+	                $response = $au->GetResponse() . "\n" . $au->GetResponseFeedBack();
+	                
+	                // Otherwise just use Curl
+	            } else {
+	                
+	                // Get our posting string
+	                $post_data   = $this->_get_post_string($this->form, $this->post);
+	                $custom_post = false;
+	                // Load our custom PHP File
+	                if ($this->form->custom_php == '1') {
+	                    if ($this->form->id != 395) {
+	                        include(HOME_PATH . 'codeigniter/application/form_includes/' . $this->form->id . '.php');
+	                    }
+	                }
+	                
+	                // If in sandbox mode, return the posting string and exit
+	                if (isset($this->post['sandbox']) && $this->post['sandbox'] == 'sandbox') {
+	                    echo json_encode(array(
+	                        'result' => TRUE,
+	                        'result_message' => $post_data
+	                    ));
+	                    exit;
+	                }
+	                
+	            }
+	            
+	            // If we have a record for LeadID, we want to save it
+	            if (isset($this->post['universal_leadid']) && !empty($this->post['universal_leadid'])) {
+	                $this->forms_m->insert_leadid_token($partner_id, $this->post['universal_leadid'], $this->post['email'], $post_data);
+	            }
+	            
+	            //if the custom_php file wants to post the data in a specific do not do the below.
+	            
+	            if (!$custom_post) {
+	                // Load up Curl
+	                $new_curl = new Curl($post_url, $post_data);
+	                
+	                // Get the response data from the partner
+	                $response = $new_curl->GetCallResponseData();
+	            }
+	            // Instantiate our transmissions class and set the transmissions data
+	            $new_transmission = new Transmissions($partner_id, $partner_campuses_id, $post_url, $post_data);
+	            
+	            // Record our Curl response in the internal_inquiry_transmissions table			
+	            $new_transmission->RecordTransmissionResponse($response);
+	            
+	            // Instantiate a lead tracker object
+	            $LeadTracker = new MFPLeadTracker();
+	            $LeadTracker->setPartnerId($partner_id);
+	            $LeadTracker->setPartnerCampusId($partner_campuses_id);
+	            $LeadTracker->setImportedDegreeId($this->post['program_of_interest']);
+	            $LeadTracker->setInternalTransmissionId($new_transmission->GetTransmissionsId());
+	            $LeadTracker->setPostDatetime(date('Y-m-d H:i:s'));
+	            $LeadTracker->setSuccess(0);
+	            $LeadTracker->setBfLeadId($bf_lead_id);
+	            $LeadTracker->setExternal(0);
+	            $LeadTracker->setUserId((isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0));
+	            $LeadTracker->save(true);
+	            
+	            // Compare the valid response
+	            if (stristr($response, $this->form->accepted_response) == FALSE) {
+	                
+	                if ($dev_mode === FALSE) {
+	                    //gives a generic error message for reps on the floor
+	                    $this->result_message[] = $this->get_generic_error_message($new_transmission->GetTransmissionsId());
+	                } else {
+	                    //Set our error message to its true value if we are in dev mode
+	                    $this->result_message[] = $response;
+	                }
+	                
+	            } else {
+	                
+	                // Process the capping and tracking for this lead
+	                // We now want to change the inquiry success value in the session to be yes
+	                $_SESSION['inquiry_sucess'] = 'yes';
+	                
+	                //Build the inquiry_data array for the internal inquiry database
+	                $inquiry_data                        = $this->post;
+	                $inquiry_data['partner_campuses_id'] = (isset($partner_campuses_id) === TRUE && $partner_campuses_id != '' ? $partner_campuses_id : $this->post['campus_of_interest']);
+	                $inquiry_data['partner_degrees_id']  = (isset($this->post['program_of_interest']) === TRUE && $this->post['program_of_interest'] != '' ? $this->post['program_of_interest'] : 0);
+	                $inquiry_data['campaign_id']         = (isset($_COOKIE['c']) === TRUE ? $_COOKIE['c'] : 1);
+	                $inquiry_data['ip_address']          = $_SERVER['REMOTE_ADDR'];
+	                $inquiry_data['inquiry_source']      = (isset($this->post['inquiry_source']) === TRUE && $this->post['inquiry_source'] == 'internal' ? 'internal' : 'website');
+	                
+	                // Set some cookie for some unknown reason
+	                setcookie('acc', 'yes');
+	                
+	                // Set the internal_inquiry_transmission_id for use with capping
+	                $internal_inquiry_transmission_id = 0;
+	                
+	                // Defined outside of this script, after a form is submitted but before this script is included
+	                if (is_object($new_transmission) === true) {
+	                    $internal_inquiry_transmission_id = $new_transmission->GetTransmissionsId();
+	                }
+	                
+	                // Insert the internal inquiry record
+	                $partner_inquiry = new Partner_Inquiry($partner_id, $inquiry_data, $post_data, $internal_inquiry_transmission_id);
+	                
+	                $temp = $this->_get_post_string($this->form, $this->post);
+	                
+	                // We don't want to increment the caps in dev mode
+	                if ($dev_mode === FALSE || ($dev_mode === TRUE && $dev_cap_mode === TRUE)) {
+	                    // Check for a campus level cap
+	                    $cap_member = SandboxPartnerCapMembers::initWithCampusId($inquiry_data['partner_campuses_id']);
+	                    
+	                    // Values for cap group to be added to lead tracker
+	                    $cap_group_id        = 0;
+	                    $cap_group_member_id = 0;
+	                    
+	                    // Hold our user ID variable incase we're not logged in
+	                    $user_id = (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : '');
+	                    
+	                    if ($cap_member != null) {
+	                        $cap_member->incrementCap($user_id, $internal_inquiry_transmission_id);
+	                        $cap_group_id        = $cap_member->getPartnerCapsId();
+	                        $cap_group_member_id = $cap_member->getId();
+	                    } else {
+	                        // Check for a program level cap and find the partner imported degree id
+	                        $cap_member = SandboxPartnerCapMembers::initWithImportedDegreeId($inquiry_data['partner_degrees_id']);
+	                        if ($cap_member != null) {
+	                            $cap_member->incrementCap($user_id, $internal_inquiry_transmission_id);
+	                            $cap_group_id        = $cap_member->getPartnerCapsId();
+	                            $cap_group_member_id = $cap_member->getId();
+	                        }
+	                    }
+	                    
+	                    if ($dev_mode === FALSE) {
+	                        // Check that this LeadTracker (defined outside of script) has been instantiated or not
+	                        if (isset($LeadTracker) === TRUE && is_object($LeadTracker) === TRUE) {
+	                            $partner_degree = $this->partner_degrees_m->get_partner_degree($inquiry_data['partner_degrees_id'], $inquiry_data['partner_campuses_id']);
+	                            $LeadTracker->setCapGroupId($cap_group_id);
+	                            $LeadTracker->setCapGroupMemberId($cap_group_member_id);
+	                            $LeadTracker->setSuccess(1);
+	                            $LeadTracker->setIsBonusFill((is_array($partner_degree) && count($partner_degree) > 0) ? $partner_degree['is_bonus_fill'] : 0);
+	                            $LeadTracker->setUserId($_SESSION['user_id']);
+	                            $LeadTracker->save();
+	                        } else {
+	                            // Otherwise log the form submission in a file to keep track of what active forms still need updating
+	                            MFPUtility::appendToUntrackedFormSubmissionLog();
+	                        }
+	                        
+	                        // Write to log file to track what forms are being used
+	                        $message = 'Form ID: ' . (isset($formid) == true ? $formid : '') . "\n";
+	                        $message .= ' Partner ID: ' . (isset($partner_id) == true ? $partner_id : '') . "\n";
+	                        $message .= ' Campus ID: ' . $inquiry_data['partner_campuses_id'] . "\n";
+	                        $message .= ' Imported Degree ID: ' . $inquiry_data['partner_degrees_id'] . "\n";
+	                        $message .= ' Source: ' . $inquiry_data['inquiry_source'] . "\n";
+	                        $message .= ' Transmission ID: ' . $internal_inquiry_transmission_id . "\n";
+	                        $message .= ' Inquiry ID: ' . $partner_inquiry->inquiry_id . "\n";
+	                        $message .= ' Cap Group ID: ' . ($cap_member != null ? $cap_member->getPartnerCapsId() : '') . "\n";
+	                        $message .= ' Cap Member ID: ' . ($cap_member != null ? $cap_member->getId() : '');
+	                        $filename = HOME_PATH . 'logs/forms/submission-end-' . date('Y-m-d') . '.log';
+	                        
+	                        MFPUtility::writeToLogFile($message, $filename);
+	                        
+	                        // Send out an email if a transmission record was not found, this should never happen
+	                        if ($internal_inquiry_transmission_id == 0) {
+	                            $email = new MFPEmail();
+	                            $email->setTo('sschlinger@myfootpath.com, ccachor@myfootpath.com, escray@myfootpath.com');
+	                            $email->setFrom('error-reporting@myfootpath.com');
+	                            $email->setSubject('Transmission Record Missing');
+	                            $email->setMessage($message);
+	                            $email->sendAsPlainText();
+	                        }
+	                    }
+	                }
+	            }
+	        } else {
+	            $this->result_message[] = 'Sorry, this form has already been submitted with this person\'s information.';
+	        }
+	        
+	        $result = FALSE;
+	        if (count($this->result_message) == 0) {
+	            $result = TRUE;
+	            
+	            // If we're in dev mode send the posting string back
+	            if ($dev_mode) {
+	                //$this->result_message[] = $post_data;
+	                // Otherwise return the default message
+	            } else {
+	                if ($this->form->id == 433 || $this->form->id == 435) {
+	                    $this->result_message[] = 'Thank you for submitting this form.';
+	                } else {
+	                    $this->result_message[] = 'This lead has been processed by the client successfully!';
+	                }
+	            }
+	        }
+	        echo json_encode(array(
+	            'result' => $result,
+	            'result_message' => $this->result_message
+	        ));
+	    }
+	    
+	    // This method takes a post array with the form information (as well as form ID) and processes it
+	    public function test_submit()
+	    {
+	        
+	        // Set our post data for this class to use
+	        $this->post = $_POST;
+	        
+	        // Set a testing flag
+	        $dev_mode = FALSE;
+	        if (isset($this->post['myfootpath_test']) && $this->post['myfootpath_test'] == 'myfootpath_test') {
+	            $dev_mode = TRUE;
+	        }
+	        
+	        // Get our form data from the database
+	        $this->form = $this->forms_m->get_form_by_ID($this->post['form_id']);
+	        if (!$this->form) {
+	            die('Could not load form data');
+	        }
+	        
+	        // Set the partner ID
+	        $partner_id = $this->form->partner_id;
+	        
+	        // Check that this is not duplicate
+	        if (!$this->_submitted_leads_check($partner_id, $this->post['email'], $this->post['last_name'])) {
+	            
+	            // This line of code must be modified when school is online, or set user application to make an hidden field named campus_of_interest
+	            $partner_campuses_id = $this->post['campus_of_interest'];
+	            
+	            // Use the test URL if we wan to submit in testing mode, otherwise use live
+	            $post_url = (array_key_exists('myfootpath_test', $this->post) && $this->post['myfootpath_test'] == 'myfootpath_test') ? $this->form->post_test : $this->form->post_live;
+	            
+	            // Set our BF Lead ID to a variable and unset as we want only keep this for internal use!
+	            $bf_lead_id = isset($this->post['lead_id']) ? $this->post['lead_id'] : '';
+	            unset($this->post['lead_id']);
+	            
+	            // We want to load our custom PHP file here
+	            $temp = $this->_get_post_string($this->form, $this->post);
+	            //echo json_encode(array('result' => TRUE, 'result_message' => $post_data)); 
+	            
+	            // If this is going to EDMC set the data array and include required files
+	            if ($this->form->soap_method === 1) {
+	                
+	                // Our required data array items
+	                $data_array['ip_address']              = $_SERVER['REMOTE_ADDR'];
+	                $data_array['vendor_lead_identifier']  = time();
+	                $data_array['vendor_code']             = (in_array('vendor_code', $this->post)) ? $this->post['vendor_code'] : '';
+	                $data_array['test_flag']               = '';
+	                $data_array['location_code']           = $this->forms_m->get_campus_client_id($this->post['campus_of_interest']);
+	                $data_array['current_date']            = gmdate('Y-m-d');
+	                $data_array['current_time']            = gmdate('H:i:s');
+	                $data_array['source_code']             = (in_array('source_code', $this->post)) ? $this->post['source_code'] : '';
+	                $data_array['current_full_date']       = $data_array['current_date'] . ' ' . $data_array['current_time'];
+	                $data_array['version_identifier_code'] = (in_array('version_identifier_code', $this->post)) ? $this->post['version_identifier_code'] : '';
+	                $data_array['program_of_interest']     = $this->forms_m->get_program_value($this->post['program_of_interest']);
+	                $data_array['post_url']                = $post_url;
+	                $data_array['uhighlevel']              = (in_array('education_level', $this->post)) ? $this->post['education_level'] : '';
+	                $data_array['YearHSGED']               = (in_array('graduation_year', $this->post)) ? $this->post['graduation_year'] : '';
+	                $data_array['militaryStatus']          = (in_array('military', $this->post)) ? $this->post['military'] : '';
+	                $data_array['vendor_affiliate']        = '';
+	                $data_array['address2']                = (in_array('address2', $this->post)) ? $this->post['address2'] : '';
+	                ;
+	                $data_array['affiliate_id'] = (in_array('affiliate_id', $this->post)) ? $this->post['affiliate_id'] : '';
+	                
+	                if (isset($this->post['sandbox']) && $this->post['sandbox'] == 'sandbox') {
+	                    echo json_encode(array(
+	                        'result' => TRUE,
+	                        'result_message' => $data_array
+	                    ));
+	                    exit;
+	                }
+	                
+	                // Instantiate our EDMC Class and required data
+	                $au = new EDMC($data_array, $data_array['current_full_date']);
+	                
+	                // Get the post data
+	                $post_data = $au->GetPostData();
+	                
+	                // Hold our response for use later
+	                $response = $au->GetResponse() . "\n" . $au->GetResponseFeedBack();
+	                
+	                // Otherwise just use Curl			
+	            } else {
+	                
+	                // Get our posting string
+	                $post_data = $this->_get_post_string($this->form, $this->post);
+	                
+	                if (isset($this->post['sandbox']) && $this->post['sandbox'] == 'sandbox') {
+	                    echo json_encode(array(
+	                        'result' => TRUE,
+	                        'result_message' => $post_data
+	                    ));
+	                    exit;
+	                }
+	                
+	            }
+	            
+	            // If we have a record for LeadID, we want to save it
+	            if (isset($this->post['universal_leadid']) && !empty($this->post['universal_leadid'])) {
+	                $this->forms_m->insert_leadid_token($partner_id, $this->post['universal_leadid'], $this->post['email'], $post_data);
+	            }
+	            
+	            // Load up Curl
+	            $new_curl = new Curl($post_url, $post_data);
+	            
+	            // Get the response data from the partner
+	            $response = $new_curl->GetCallResponseData();
+	            
+	            // Instantiate our transmissions class and set the transmissions data
+	            $new_transmission = new Transmissions($partner_id, $partner_campuses_id, $post_url, $post_data);
+	            
+	            // Record our Curl response in the internal_inquiry_transmissions table			
+	            $new_transmission->RecordTransmissionResponse($response);
+	            
+	            // Instantiate a lead tracker object
+	            $LeadTracker = new MFPLeadTracker();
+	            $LeadTracker->setPartnerId($partner_id);
+	            $LeadTracker->setPartnerCampusId($partner_campuses_id);
+	            $LeadTracker->setImportedDegreeId($this->post['program_of_interest']);
+	            $LeadTracker->setInternalTransmissionId($new_transmission->GetTransmissionsId());
+	            $LeadTracker->setPostDatetime(date('Y-m-d H:i:s'));
+	            $LeadTracker->setSuccess(0);
+	            $LeadTracker->setBfLeadId($bf_lead_id);
+	            $LeadTracker->setExternal(0);
+	            $LeadTracker->save(true);
+	            
+	            // Compare the valid response
+	            if (stristr($response, $this->form->accepted_response) == FALSE) {
+	                
+	                // Set our error message
+	                $this->result_message[] = $response;
+	                
+	            } else {
+	                
+	                // Process the capping and tracking for this lead
+	                // We now want to change the inquiry success value in the session to be yes
+	                $_SESSION['inquiry_sucess'] = 'yes';
+	                
+	                //Build the inquiry_data array for the internal inquiry database
+	                $inquiry_data                        = $this->post;
+	                $inquiry_data['partner_campuses_id'] = (isset($partner_campuses_id) === TRUE && $partner_campuses_id != '' ? $partner_campuses_id : $this->post['campus_of_interest']);
+	                $inquiry_data['partner_degrees_id']  = (isset($this->post['program_of_interest']) === TRUE && $this->post['program_of_interest'] != '' ? $this->post['program_of_interest'] : 0);
+	                $inquiry_data['campaign_id']         = (isset($_COOKIE['c']) === TRUE ? $_COOKIE['c'] : 1);
+	                $inquiry_data['ip_address']          = $_SERVER['REMOTE_ADDR'];
+	                $inquiry_data['inquiry_source']      = (isset($this->post['inquiry_source']) === TRUE && $this->post['inquiry_source'] == 'internal' ? 'internal' : 'website');
+	                
+	                // Set some cookie for some unknown reason
+	                setcookie('acc', 'yes');
+	                
+	                // Set the internal_inquiry_transmission_id for use with capping
+	                $internal_inquiry_transmission_id = 0;
+	                
+	                // Defined outside of this script, after a form is submitted but before this script is included
+	                if (is_object($new_transmission) === true) {
+	                    $internal_inquiry_transmission_id = $new_transmission->GetTransmissionsId();
+	                }
+	                
+	                // Insert the internal inquiry record
+	                $partner_inquiry = new Partner_Inquiry($partner_id, $inquiry_data, $post_data, $internal_inquiry_transmission_id);
+	                
+	                // We don't want to increment the caps in dev mode
+	                if (!$dev_mode) {
+	                    
+	                    // Check for a campus level cap
+	                    $cap_member = SandboxPartnerCapMembers::initWithCampusId($inquiry_data['partner_campuses_id']);
+	                    
+	                    // Values for cap group to be added to lead tracker
+	                    $cap_group_id        = 0;
+	                    $cap_group_member_id = 0;
+	                    
+	                    // Hold our user ID variable incase we're not logged in
+	                    $user_id = (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : '');
+	                    
+	                    if ($cap_member != null) {
+	                        $cap_member->incrementCap($user_id, $internal_inquiry_transmission_id);
+	                        $cap_group_id        = $cap_member->getPartnerCapsId();
+	                        $cap_group_member_id = $cap_member->getId();
+	                    } else {
+	                        // Check for a program level cap and find the partner imported degree id
+	                        $cap_member = SandboxPartnerCapMembers::initWithImportedDegreeId($inquiry_data['partner_degrees_id']);
+	                        if ($cap_member != null) {
+	                            $cap_member->incrementCap($user_id, $internal_inquiry_transmission_id);
+	                            $cap_group_id        = $cap_member->getPartnerCapsId();
+	                            $cap_group_member_id = $cap_member->getId();
+	                        }
+	                    }
+	                    
+	                    // Check that this LeadTracker (defined outside of script) has been instantiated or not
+	                    if (isset($LeadTracker) === TRUE && is_object($LeadTracker) === TRUE) {
+	                        $partner_degree = $this->partner_degrees_m->get_partner_degree($inquiry_data['partner_degrees_id'], $inquiry_data['partner_campuses_id']);
+	                        $LeadTracker->setCapGroupId($cap_group_id);
+	                        $LeadTracker->setCapGroupMemberId($cap_group_member_id);
+	                        $LeadTracker->setSuccess(1);
+	                        $LeadTracker->setIsBonusFill((is_array($partner_degree) && count($partner_degree) > 0) ? $partner_degree['is_bonus_fill'] : 0);
+	                        $LeadTracker->save();
+	                    } else {
+	                        // Otherwise log the form submission in a file to keep track of what active forms still need updating
+	                        MFPUtility::appendToUntrackedFormSubmissionLog();
+	                    }
+	                    
+	                    // Write to log file to track what forms are being used
+	                    $message = 'Form ID: ' . (isset($formid) == true ? $formid : '') . "\n";
+	                    $message .= ' Partner ID: ' . (isset($partner_id) == true ? $partner_id : '') . "\n";
+	                    $message .= ' Campus ID: ' . $inquiry_data['partner_campuses_id'] . "\n";
+	                    $message .= ' Imported Degree ID: ' . $inquiry_data['partner_degrees_id'] . "\n";
+	                    $message .= ' Source: ' . $inquiry_data['inquiry_source'] . "\n";
+	                    $message .= ' Transmission ID: ' . $internal_inquiry_transmission_id . "\n";
+	                    $message .= ' Inquiry ID: ' . $partner_inquiry->inquiry_id . "\n";
+	                    $message .= ' Cap Group ID: ' . ($cap_member != null ? $cap_member->getPartnerCapsId() : '') . "\n";
+	                    $message .= ' Cap Member ID: ' . ($cap_member != null ? $cap_member->getId() : '');
+	                    $filename = HOME_PATH . 'logs/forms/submission-end-' . date('Y-m-d') . '.log';
+	                    
+	                    MFPUtility::writeToLogFile($message, $filename);
+	                    
+	                    // Send out an email if a transmission record was not found, this should never happen
+	                    if ($internal_inquiry_transmission_id == 0) {
+	                        $email = new MFPEmail();
+	                        $email->setTo('sschlinger@myfootpath.com, ccachor@myfootpath.com');
+	                        $email->setFrom('error-reporting@myfootpath.com');
+	                        $email->setSubject('Transmission Record Missing');
+	                        $email->setMessage($message);
+	                        $email->sendAsPlainText();
+	                    }
+	                    
+	                }
+	            }
+	        } else {
+	            $this->result_message[] = 'Sorry, this form has already been submitted with this person\'s information.';
+	        }
+	        
+	        $result = FALSE;
+	        if (count($this->result_message) == 0) {
+	            $result = TRUE;
+	            
+	            // If we're in dev mode send the posting string back
+	            if ($dev_mode) {
+	                $this->result_message[] = $post_data;
+	                // Otherwise return the default message
+	            } else {
+	                $this->result_message[] = 'This lead has been processed by the client successfully!';
+	            }
+	        }
+	        if ($this->form->form_id == 234) {
+	            header("Content-Type: application/json");
+	            echo json_encode(array(
+	                'result' => $result,
+	                'result_message' => 'success'
+	            ));
+	            exit;
+	        } else {
+	            echo json_encode(array(
+	                'result' => $result,
+	                'result_message' => $this->result_message
+	            ));
+	        }
+	    }
+	    
+	    private function _generate_form_string()
+	    {
+	        
+	        // Begin generating the HTML for our form
+	        $this->form_string = form_open(site_url() . 'forms/view/submit', array(
+	            'class' => 'form-horizontal',
+	            'id' => 'myform'
+	        ));
+	        
+	        // Make sure we have fields to loop through
+	        if (count($this->form->fields) > 0) {
+	            // Loop through each field and get the HTML
+	            foreach ($this->form->fields as $field) {
+	                
+	                // Set the field array
+	                $this->field = $field;
+	                
+	                // We want to add some container divisons around our form fields
+	                //$width = (in_array($this->field->field_name, $this->wide_fields)) ? 'span6' : 'span3';
+	                $width = '';
+	                
+	                // Wrap the field in our field container
+	                if ($field->type != 'hidden') {
+	                    $this->form_string .= '
+					<div class="control-group ' . $width . '">
+						';
+	                    
+	                    
+	                    // Set the field label
+	                    $this->_generate_label();
+	                    
+	                    // Wrap the control in our container
+	                    $this->form_string .= '
+						<div class="controls">
+						';
+	                }
+	                
+	                // Based on the type of field, generate the string
+	                switch ($field->type) {
+	                    default:
+	                    case 'text':
+	                        $this->_generate_text();
+	                        break;
+	                    case 'hidden':
+	                        $this->_generate_hidden();
+	                        break;
+	                    case 'dropdown':
+	                        $this->_generate_dropdown();
+	                        break;
+	                    case 'checkbox':
+	                        $this->_generate_checkbox();
+	                        break;
+	                    case 'radio':
+	                        $this->_generate_radio();
+	                        break;
+	                }
+	                
+	                // Close our containers
+	                if ($field->type != 'hidden') {
+	                    $this->form_string .= '
+							</div>
+						</div>
+						';
+	                }
+	            }
+	        }
+	        
+	        // Append our form id as a hidden field
+	        $this->form_string .= form_hidden('form_id', $this->form->id);
+	        
+	        // We need to set our BF Lead ID on every form
+	        $this->form_string .= form_hidden('lead_id', (isset($_GET['lead_id']) ? $_GET['lead_id'] : ''));
+	        
+	        // If in test mode add a hidden test => test input field
+	        if ($this->uri->segment(5) == 'test') {
+	            $this->form_string .= form_hidden('myfootpath_test', 'myfootpath_test');
+	        }
+	        
+	        // If in sandbox mode add a hidden sandbox => true input field
+	        if ($this->uri->segment(5) == 'sandbox') {
+	            $this->form_string .= form_hidden('sandbox', 'sandbox');
+	        }
+	        
+	        // Add our submit buttons
+	        $this->form_string .= '
+			<hr>
+			<p>
+				<button class="btn btn-primary" id="submit_button" type="submit">Submit</button>
+			</p>
+			';
+	        
+	        // If we have a LeadID embed script, place it here
+	        if (!empty($this->form->leadid_embed_script)) {
+	            $this->form_string .= $this->form->leadid_embed_script;
+	        }
+	        
+	        // Close the form
+	        $this->form_string .= form_close();
+	    }
+	    
+	    private function _generate_validation_string()
+	    {
+	        
+	        // String Holder
+	        $str = '';
+	        
+	        // Get our rules
+	        $restrictions = $this->form->restrictions;
+	        
+	        //echo '<pre>'; print_r($restrictions); echo '</pre>';
+	        
+	        // If we have any, loop through the rules
+	        if (is_array($restrictions) && count($restrictions) > 0) {
+	            
+	            foreach ($restrictions as $res) {
+	                $rule    = $res->restriction_name;
+	                $message = $res->restriction_message;
+	                $count   = count($res->rules);
+	                $i       = 1;
+	                $str .= '
+	if(';
+	                
+	                if ($count > 0) {
+	                    foreach ($res->rules as $rule) {
+	                        $rule_condition = ($rule->rule_condition == 'and') ? '&&' : '||';
+	                        $condition      = ($i == $count) ? '' : ' ' . $rule_condition . ' ';
+	                        $str .= $this->_return_validation_rule_for_type($rule->type, $rule->name, $rule->operator, addslashes($rule->value), $rule->attribute) . $condition;
+	                        $i++;
+	                    }
+	                }
+	                $str .= ') {
+		confirmation_alert += "' . addslashes($message) . '" + "\n";
+	}
+	';
+	            }
+	            
+	        }
+	        
+	        //echo '<pre>'; print_r($errors); echo '</pre>';
+	        
+	        // Loop through our rules
+	        
+	        // Validate our rules
+	        
+	        
+	        return $str;
+	    }
+	    
+	    
+	    /**
+	     * _return_validation_rule_for_type function.
+	     * This method generates the jquery validation string based on the type of field and field operator
+	     * ex (CONTAINS, IN, NOT IN, <, >, ==, !=)
+	     * 
+	     * @access private
+	     * @param mixed $type
+	     * @param mixed $field_name
+	     * @param mixed $operator
+	     * @param mixed $value
+	     * @return string
+	     */
+	    private function _return_validation_rule_for_type($type, $field_name, $operator, $value, $attribute)
+	    {
+	        
+	        // If this is a dropdown value, make sure we have the value of the option selected
+	        
+	        
+	        // In some cases, we want to grab the text value in jQuery versus the actual value attribute
+	        $value_attribute = (empty($attribute) || $attribute == '') ? 'val()' : $attribute;
+	        // If this is a dropdown value, make sure we have the value of the option selected
+	        $selected        = ($type == 'dropdown') ? ' option:selected' : '';
+	        // Based on the operator, we return different methods of jquery validation
+	        switch ($operator) {
+	            // String operation
+	            case 'CONTAINS':
+	                $rule = '$("#' . $field_name . $selected . '").' . $value_attribute . '.indexOf("' . $value . '") >= 0';
+	                break;
+	            // Array operation, we convert comma separated lists into an "'" separated array
+	            case 'IN':
+	                if (strstr($value, ',')) {
+	                    $values = explode(',', $value);
+	                    $temp   = array();
+	                    foreach ($values as $val) {
+	                        $temp[] = "'" . trim($val) . "'";
+	                    }
+	                    $value = implode(',', $temp);
+	                }
+	                $rule = '$.inArray($("#' . $field_name . $selected . '").' . $value_attribute . ', [' . $value . ']) >= 0';
+	                break;
+	            // We do the same for NOT IN array
+	            case 'NOT IN':
+	                if (strstr($value, ',')) {
+	                    $values = explode(',', $value);
+	                    $temp   = array();
+	                    foreach ($values as $val) {
+	                        $temp[] = "'" . trim($val) . "'";
+	                    }
+	                    $value = implode(',', $temp);
+	                }
+	                $rule = '$.inArray($("#' . $field_name . $selected . '").' . $value_attribute . '.toString() , [' . $value . ']) == -1';
+	                break;
+	            // We just do our basic field_name, operator, value condition
+	            default:
+	                $rule = '$("#' . $field_name . $selected . '").' . $value_attribute . ' ' . $operator . ' ' . (is_numeric($value) ? $value : '"' . $value . '"');
+	                break;
+	                
+	        }
+	        //if its a date return the date and compare
+	        if (strlen($attribute) >= 6 && substr($attribute, 0, 6) == 'date()') {
+	            //get the date relative to the value to compare it to the actual date
+	            $year    = idate('Y') - $value;
+	            $month   = idate('m');
+	            $day     = idate('d');
+	            $str_val = 'new Date("' . $month . '/' . $day . '/' . $year . '")';
+	            $rule    = $str_val . ' ' . $operator . ' ' . 'new Date( $("#' . $field_name . $selected . '").val())';
+	        }
+	        // Return our string
+	        return $rule;
+	        
+	    }
+	    
+	    private function _validate_rule($rules = array())
+	    {
+	        
+	        echo '<pre>';
+	        print_r($rules);
+	        echo '</pre>';
+	        
+	        // Go through our rules and evaluate
+	        foreach ($rules as $rule) {
+	            if (array_key_exists($rule->name, $this->post)) {
+	                echo 'Here';
+	            }
+	        }
+	        
+	        //return FALSE;
+	        
+	    }
+	    
+	    private function _validate_state_zip($zip, $state)
+	    {
+	        return TRUE;
+	    }
+	    
+	    private function _process_success()
+	    {
+	    }
+	    
+	    private function _get_post_string($form, $post)
+	    {
+	        
+	        // Load our parser library
+	        $this->load->library('parser');
+	        
+	        // Our data array that we use our parser class to replace tag with value
+	        $tags = array(
+	            'date' => date('Y-m-d'),
+	            'datetime' => date('Y-m-d H:i:s'),
+	            'timezone' => 'CST',
+	            'email' => (isset($post['email']) ? $post['email'] : ''),
+	            'phone' => (isset($post['phone']) ? $post['phone'] : ''),
+	            'email_phone' => (isset($post['email']) ? $post['email'] : '') . (isset($post['phone']) ? $post['phone'] : ''),
+	            'time' => date('H:i:s'),
+	            'timestamp' => microtime(),
+	            'ip_address' => $_SERVER['REMOTE_ADDR'],
+	            'per_lead_unique_id' => time()
+	            //, 'tracking_id' => $this->create_tracking_id()
+	                ,
+	            'tracking_id' => ''
+	        );
+	        
+	        // Begin our holder string
+	        $str = '';
+	        
+	        // Hold our counter
+	        $i = 0;
+	        
+	        // Loop through our form fields and post array and map to posting keys
+	        foreach ($post as $key => $value) {
+	            
+	            $query_string = ($i == 0) ? '' : '&';
+	            
+	            // If we have a tag value {date} we want to use our parser to replace values
+	            // from the data array above
+	            if (strstr($value, '{')) {
+	                if (strstr($value, 'tracking_id')) {
+	                    $value = $this->create_tracking_id();
+	                } else {
+	                    $value = $this->parser->parse_string($value, $tags, TRUE);
+	                }
+	            }
+	            
+	            // Campus of Interest we need to get the client school ID
+	            if ($key == 'campus_of_interest') {
+	                $value = $this->forms_m->get_campus_client_id($value);
+	            }
+	            // We need to get the program value from the ID
+	            if ($key == 'program_of_interest') {
+	                $value = $this->forms_m->get_program_value($value);
+	            }
+	            
+	            // We need to set the IP address manually
+	            if ($key == 'ip_address') {
+	                $value = $_SERVER['SERVER_ADDR'];
+	            }
+	            
+	            // Format our phone number
+	            if (strstr($key, 'phone')) {
+	                $value = $this->_cleanse_phone_number($value);
+	            }
+	            
+	            // Get the posting key to send to the client
+	            $post_key = $this->forms_m->get_post_key($key, $form->id);
+	            
+	            //echo $post_key;
+	            
+	            if (!empty($post_key) && $post_key != '') {
+	                // Generate our key => value pairs for the query string
+	                $str .= $query_string . $post_key . '=' . $value;
+	            }
+	            
+	            $i++;
+	        }
+	        
+	        // Return our string
+	        return $str;
+	    }
+	    
+	    private function create_tracking_id()
+	    {
+	        $lm_class = 'LeadManagement';
+	        global $mysqli;
+	        $data_array = array();
+	        require_once 'colleges/source_tracking_processing.php';
+	        
+	        return $data_array['traffic_id_only_source_tracking_string'];
+	    }
+	    
+	    private function _cleanse_phone_number($phone)
+	    {
+	        $phone_cleanse_array = array(
+	            '-',
+	            ' ',
+	            '(',
+	            ')'
+	        );
+	        return str_replace($phone_cleanse_array, '', $phone);
+	    }
+	    
+	    private function _submitted_leads_check($partner_id, $email, $last_name)
+	    {
+	        
+	        $result = $this->forms_m->submitted_leads_check($partner_id, $email, $last_name);
+	        return $result;
+	    }
+	    
+	    private function _generate_label()
+	    {
+	        $req  = ($this->field->required == '1') ? ' *' : '';
+	        $attr = array(
+	            'class' => 'control-label'
+	        );
+	        if ($this->field->field_type != 'hidden') {
+	            $this->form_string .= form_label($this->field->label . $req, $this->field->field_name, $attr);
+	        }
+	    }
+	    
+	    private function _generate_hidden()
+	    {
+	        // Get our field name and value
+	        $name = $this->field->field_name;
+	        // If Lead ID we need an ID added to hidden field (hack!)
+	        $id   = '';
+	        if ($name == 'universal_leadid') {
+	            $id = ' id="leadid_token"';
+	        }
+	        
+	        else if ($name == 'nocontext') {
+	            // this does not work! It needs to be revised.
+	            // If nocontext we need a hidden posting name to lookup posting keys
+	            $name = $this->field->name;
+	        }
+	        $value = $this->_get_hidden_value();
+	        if ($name == 'source_id') {
+	            $value = (isset($_GET['source_id']) ? $_GET['source_id'] : $value);
+	        }
+	        
+	        // Generate our hidden input string
+	        //$this->form_string .= form_hidden($name, $value);
+	        $this->form_string .= '<input type="hidden" name="' . $name . '" value="' . $value . '"' . $id . ' />';
+	    }
+	    
+	    private function _generate_text()
+	    {
+	        // For our form validation, we set rules in the classname so create an empty string
+	        $class = '';
+	        // Begin setting our form rules
+	        if ($this->field->required == '1') {
+	            $class .= 'required ';
+	        }
+	        if ($this->field->numeric_only == '1') {
+	            $class .= 'digits ';
+	        }
+	        if ($this->field->email == '1') {
+	            $class .= 'email ';
+	        }
+	        if ($this->field->min_value != '' && $this->field->min_value != '0') {
+	            $class .= 'min[' . $this->field->min_value . '] ';
+	        }
+	        if ($this->field->max_value != '' && $this->field->max_value != '0') {
+	            $class .= 'max[' . $this->field->max_value . ']';
+	        }
+	        
+	        // Get our input value (if there is one)
+	        $value = $this->_get_hidden_value();
+	        // Begin our data array to pass to the form input helper
+	        if ($this->field->name == 'source_id') {
+	            $value = (isset($_GET['source_id']) ? $_GET['source_id'] : $value);
+	        }
+	        $data = array(
+	            'name' => $this->field->field_name,
+	            'id' => $this->field->field_name,
+	            'value' => $value,
+	            'class' => $class
+	        );
+	        
+	        // Checked values to aid in validating html created by including these empty values
+	        ($this->field->max_length == '0') ? '' : $data['maxlength'] = $this->field->max_length;
+	        ($this->field->min_length == '0') ? '' : $data['minlength'] = $this->field->min_length;
+	        /*if (array_key_exists('maxlength', $data) && array_key_exists('minlength', $data) && $data['maxlength'] == $data['minlength'])
+	        {
+	        unset($data['minlength']);
+	        }*/
+	        
+	        
+	        // Append to our form string						
+	        $this->form_string .= form_input($data);
+	    }
+	    
+	    private function _generate_dropdown()
+	    {
+	        // Get the form options for our dropdown
+	        $options = $this->_get_options();
+	        // Check if this field is required
+	        $class   = ($this->field->required == '1') ? 'required' : '';
+	        // Append to our form
+	        $this->form_string .= form_dropdown($this->field->field_name, $options, '', 'id="' . $this->field->field_name . '" class="' . $class . '"');
+	    }
+	    
+	    private function _generate_checkbox()
+	    {
+	        // Get our value
+	        $value = $this->_get_hidden_value();
+	        ;
+	        // Check if this field is required
+	        $class = ($this->field->required == '1') ? 'required' : '';
+	        // Append to our form
+	        $this->form_string .= form_checkbox($this->field->field_name, $value, TRUE, 'id="' . $this->field->field_name . '" class="' . $class . '"');
+	    }
+	    
+	    private function _generate_radio()
+	    {
+	        
+	    }
+	    
+	    private function _get_value()
+	    {
+	        // Create our holder string
+	        $value = '';
+	        // Set the field value if it exists in options, otherwise just leave empty
+	        if (array_key_exists('options', $this->field)) {
+	            if (is_array($this->field->options)) {
+	                foreach ($this->field->options as $option) {
+	                    //echo '<pre>'; print_r($option); echo '</pre>';
+	                    $value = $option->value;
+	                }
+	                //should be modified so if the field is hidden then the field automatically takes the default value.
+	                
+	                // If we don't have option values take the default value of the field
+	            } else if (array_key_exists('default_value', $this->field)) {
+	                $value = $this->field->default_value;
+	            }
+	        }
+	        return $value;
+	    }
+	    /*
+	     * This function is different from _get_value in that it looks for the default value and ignores any options associated to the field. 
+	     */
+	    private function _get_hidden_value()
+	    {
+	        // Create our holder string
+	        $value = '';
+	        // Set the field value if it exists in options, otherwise just leave empty
+	        if (array_key_exists('default_value', $this->field)) {
+	            $value = $this->field->default_value;
+	        }
+	        return $value;
+	    }
+	    private function _get_options()
+	    {
+	        // Set an empty array as dropdown helper expects it if no records
+	        $arr = array();
+	        // Check that we have options to loop through and create our formatted array
+	        if (array_key_exists('options', $this->field) && is_array($this->field->options)) {
+	            foreach ($this->field->options as $options) {
+	                //if($options->value == '0') { $options->value = ''; }
+	                $arr[$options->value] = $options->display;
+	            }
+	        }
+	        return $arr;
+	    }
+	    
+	    /**
+	     * This will generalize the response message so a user wont
+	     * see all of the error specifics. This will simplify the form
+	     * leading to less confusion on the floor and easier classification 
+	     * of errors.
+	     * @param integer id of the the transmission
+	     * @access private
+	     * @return string the simplified error message
+	     */
+	    private function get_generic_error_message($id)
+	    {
+	        return $this->forms_m->get_gen_response($id);
+	    }
+	}
+</div>
