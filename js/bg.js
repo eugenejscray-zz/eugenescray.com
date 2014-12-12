@@ -80,7 +80,7 @@ function animatedLine(startx, starty, colorStr){
 	    ctx.stroke();
 	} 
 
-	this.drawLine = function(flagDirection){
+	this.drawLine = function(){
 		
 		clearInterval(this.myinterval);
 
