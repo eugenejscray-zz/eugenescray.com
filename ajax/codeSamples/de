@@ -1,5 +1,6 @@
 
-Discovery Education Standards Code Sample
+<p>Discovery Education Standards Code Sample</p>
+<p>The below code contruct was responsible show showing standards and for the backend flow of processing a new Trial. All security sensitive information has been hidden</p>
 <div id="de-standards-code">
     <div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #007020">&lt;cfcomponent</span> <span style="color: #996633">output</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;false&quot;</span> <span style="color: #996633">extends</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;base&quot;</span> <span style="color: #996633">accessors</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;true&quot;</span><span style="color: #007020">&gt;</span>
 

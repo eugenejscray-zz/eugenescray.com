@@ -98,12 +98,13 @@ function animatedLine(startx, starty, colorStr){
 		// console.log("point" + this.endpointx);
 
 
-
+		// Lets refacotor this and make it so its concentrating on the viewport.
 		// Something is wrong with this function we are gravitating to the left always.
-		if(xGravPull && direction > this.NORTH && direction < this.SOUTH && this.endpointx < $(document).width() / 2){
+		if(xGravPull && direction > this.NORTH && direction < this.SOUTH && this.endpointx > $(document).width() / 2){
 			direction = this.reverseDirection(direction);
 		}
-		else if(xGravPull && direction > this.SOUTH && this.endpointx > $(document).width() / 2)
+		// this is wrong wrong
+		else if(xGravPull && direction > this.SOUTH && this.endpointx < $(document).width() / 2)
 			direction = this.reverseDirection(direction);
 
 		if(yGravPull && (direction < this.EAST || direction > this.WEST) && this.endpointy < $(document).height() / 2){
