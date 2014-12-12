@@ -114,10 +114,7 @@ function animatedLine(startx, starty, colorStr){
 			direction = this.reverseDirection(direction);
 		}
 
-		console.log(direction);
-
-
-
+		// console.log(direction);
 
 		var newPointY, newPointX;
 
