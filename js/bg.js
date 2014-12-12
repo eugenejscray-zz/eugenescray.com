@@ -6,11 +6,11 @@ $(document).ready(function(){
 	// ranomize the spot.
 
 
-	for(var i = 0; i < 12; i++){
-		yCord = Math.floor($(document).height() / 12) * i;
+	for(var i = 0; i < 36; i++){
+		yCord = Math.floor($(document).height() / 36) * i;
 		xCord = ( i % 2 == 0 ? Math.floor($(document).width() / 3) : Math.floor($(document).width() * 2 / 3) ) ;
 
-		animation = new animatedLine(xCord, yCord, "#0F5791");
+		animation = new animatedLine(xCord, yCord, "#FFD700");
 		animation.init();
 	}
 
@@ -41,7 +41,7 @@ function animatedLine(startx, starty, colorStr){
 	this.myinterval = {};
 
 	this.init = function() {
-	   	this.myinterval = setInterval( function() { self.animate(self.endpointx,self.endpointy);}, 10);
+	   	this.myinterval = setInterval( function() { self.animate(self.endpointx,self.endpointy);}, 1);
 	}
 
 	this.animate = function(endpointx, endpointy) {
@@ -85,25 +85,21 @@ function animatedLine(startx, starty, colorStr){
 		clearInterval(this.myinterval);
 
 		// calculate the next point with direction and distance.
-		direction = Math.floor(Math.random() * 8) + 1;
 		distance = Math.floor(Math.random() * 10) + 1;
+		this.switchDirection(distance);
+		this.init();
+	}
+	
+	// Test so the animation will "gravitate" towards the middle of the screen
+	// select a random number and if 1/10 time then pull the animation in that direction.
+	// TODO: Lets refacotor this and make it so its concentrating on the viewport.
+	this.gravPull = function(direction){
+		xGravPull = Math.floor(Math.random() * 20) + 1 == 8;
+		yGravPull = Math.floor(Math.random() * 20) + 1 == 8;
 
-
-		// Test so the animation will "gravitate" towards the middle of the screen
-		// select a random number and if 1/10 time then pull the animation in that direction.
-		xGravPull = Math.floor(Math.random() * 8) + 1 == 20;
-		yGravPull = Math.floor(Math.random() * 8) + 1 == 20;
-
-		// console.log("Direction" + direction);
-		// console.log("point" + this.endpointx);
-
-
-		// Lets refacotor this and make it so its concentrating on the viewport.
-		// Something is wrong with this function we are gravitating to the left always.
 		if(xGravPull && direction > this.NORTH && direction < this.SOUTH && this.endpointx > $(document).width() / 2){
 			direction = this.reverseDirection(direction);
 		}
-		// this is wrong wrong
 		else if(xGravPull && direction > this.SOUTH && this.endpointx < $(document).width() / 2)
 			direction = this.reverseDirection(direction);
 
@@ -113,10 +109,14 @@ function animatedLine(startx, starty, colorStr){
 		else if(yGravPull && (direction > this.EAST && direction < this.WEST) && this.endpointy > $(document).height() / 2){
 			direction = this.reverseDirection(direction);
 		}
+	}
 
-		// console.log(direction);
+	this.switchDirection = function(distance){
+		direction = Math.floor(Math.random() * 8) + 1;
 
 		var newPointY, newPointX;
+
+		this.gravPull(direction);
 
 		switch(direction){
 			case this.NORTH:
@@ -162,7 +162,6 @@ function animatedLine(startx, starty, colorStr){
 			default:
 				console.log("We have a problem");
 		}
-		this.init();
 	}
 
 	// Helper function to set variables for animation. 
@@ -181,7 +180,8 @@ function animatedLine(startx, starty, colorStr){
 		}
 		else {
 			// This is bugging out for some reason we are running the full programatic stack.
-			this.drawLine();
+			// we are going to end up pulling the change direction into its own function and then we will be rerunning this function to change direction explicitly.
+			this.switchDirection(20);
 		}
 	}
 
