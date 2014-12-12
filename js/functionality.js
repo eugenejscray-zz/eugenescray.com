@@ -4,7 +4,7 @@ $(document).ready(function(){
 		$('.modal-code').modal('toggle');
 
 		// Get the correct file based off of the...
-		$.post('ajax/CodeSamples/' + $(this).data('company'), 
+		$.post('ajax/codeSamples/' + $(this).data('company'), 
 			function(data){
 				$('#code-sample-body').html(data);
 				console.log("HERE");

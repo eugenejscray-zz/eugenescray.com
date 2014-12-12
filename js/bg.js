@@ -85,14 +85,14 @@ function animatedLine(startx, starty, colorStr){
 		clearInterval(this.myinterval);
 
 		// calculate the next point with direction and distance.
-		var direction = Math.floor(Math.random() * 8) + 1;
-		var distance = Math.floor(Math.random() * 10) + 1;
+		direction = Math.floor(Math.random() * 8) + 1;
+		distance = Math.floor(Math.random() * 10) + 1;
 
 
 		// Test so the animation will "gravitate" towards the middle of the screen
 		// select a random number and if 1/10 time then pull the animation in that direction.
-		var xGravPull = Math.floor(Math.random() * 8) + 1 == 20;
-		var yGravPull = Math.floor(Math.random() * 8) + 1 == 20;
+		xGravPull = Math.floor(Math.random() * 8) + 1 == 20;
+		yGravPull = Math.floor(Math.random() * 8) + 1 == 20;
 
 		// console.log("Direction" + direction);
 		// console.log("point" + this.endpointx);
