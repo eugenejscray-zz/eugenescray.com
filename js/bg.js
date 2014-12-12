@@ -91,8 +91,8 @@ function animatedLine(startx, starty, colorStr){
 
 		// Test so the animation will "gravitate" towards the middle of the screen
 		// select a random number and if 1/10 time then pull the animation in that direction.
-		var xGravPull = Math.floor(Math.random() * 8) + 1 == 8;
-		var yGravPull = Math.floor(Math.random() * 8) + 1 == 8;
+		var xGravPull = Math.floor(Math.random() * 8) + 1 == 20;
+		var yGravPull = Math.floor(Math.random() * 8) + 1 == 20;
 
 		// console.log("Direction" + direction);
 		// console.log("point" + this.endpointx);
